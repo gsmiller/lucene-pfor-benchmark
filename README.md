@@ -15,8 +15,8 @@ loop vs. the candidate needing a loop plus two vectorized instructions (the arra
 
 ```
 Benchmark                                  (bitsPerValue)  (exceptionCount)  (sameVal)   Mode  Cnt  Score   Error   Units
-DecodeBenchmark.pForDeltaBaselineDecoder                0                 0          2  thrpt   10  9.594 ± 0.305  ops/us
-DecodeBenchmark.pForDeltaCandidateDecoder               0                 0          2  thrpt   10  7.154 ± 1.335  ops/us
+DecodeBenchmark.pForDeltaBaselineDecoder                0                 0          2  thrpt   10  8.034 ± 0.022  ops/us
+DecodeBenchmark.pForDeltaCandidateDecoder               0                 0          2  thrpt   10  6.849 ± 0.116  ops/us
 ```
 
 NOTE: This is all based on the work done by Adrien Grand over here: [decode-128-ints-benchmark](https://github.com/jpountz/decode-128-ints-benchmark)
