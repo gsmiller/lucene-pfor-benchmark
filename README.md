@@ -74,7 +74,7 @@ Looks like the array copy (which is getting vectorized):
               0x00007f132fa052d1: vzeroupper 
   0.23%       0x00007f132fa052d4: movabs $0x7f1327dd0f60,%r10
   0.12%       0x00007f132fa052de: callq  *%r10              ;*invokestatic arraycopy {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - gsmiller.PForCandidateDecoder::prefixSumOf@9 (line 12)
+                                                            ; - gsmiller.PForCandidateDecoderSlow::prefixSumOf@9 (line 12)
                                                             ; - gsmiller.PForBaselineDecoder::decodeAndPrefixSum@33 (line 39)
                                                             ; - gsmiller.DecodeBenchmark::pForDeltaCandidateDecoder@42 (line 29)
                                                             ; - gsmiller.generated.DecodeBenchmark_pForDeltaCandidateDecoder_jmhTest::pForDeltaCandidateDecoder_thrpt_jmhStub@151 (line 240)
@@ -93,12 +93,12 @@ Looks like the main "multiplication loop" (looks pretty non-vectorized)
   2.54%   ││  0x00007f132fa0537a: mov    %r13,%r10
   0.54%   ││  0x00007f132fa0537d: imul   0x28(%rbp,%r9,8),%r10
   1.42%   ││  0x00007f132fa05383: mov    %r10,0x28(%rbp,%r9,8)  ;*lastore {reexecute=0 rethrow=0 return_oop=0}
-          ││                                                ; - gsmiller.PForCandidateDecoder::prefixSumOf@30 (line 14)
+          ││                                                ; - gsmiller.PForCandidateDecoderSlow::prefixSumOf@30 (line 14)
           ││                                                ; - gsmiller.PForBaselineDecoder::decodeAndPrefixSum@33 (line 39)
           ││                                                ; - gsmiller.DecodeBenchmark::pForDeltaCandidateDecoder@42 (line 29)
           ││                                                ; - gsmiller.generated.DecodeBenchmark_pForDeltaCandidateDecoder_jmhTest::pForDeltaCandidateDecoder_thrpt_jmhStub@151 (line 240)
   1.27%   ││  0x00007f132fa05388: add    $0x4,%r9d          ;*iinc {reexecute=0 rethrow=0 return_oop=0}
-          ││                                                ; - gsmiller.PForCandidateDecoder::prefixSumOf@31 (line 13)
+          ││                                                ; - gsmiller.PForCandidateDecoderSlow::prefixSumOf@31 (line 13)
           ││                                                ; - gsmiller.PForBaselineDecoder::decodeAndPrefixSum@33 (line 39)
           ││                                                ; - gsmiller.DecodeBenchmark::pForDeltaCandidateDecoder@42 (line 29)
           ││                                                ; - gsmiller.generated.DecodeBenchmark_pForDeltaCandidateDecoder_jmhTest::pForDeltaCandidateDecoder_thrpt_jmhStub@151 (line 240)
@@ -112,18 +112,18 @@ And the "addition loop" (which appears vectorized)
 ```
   0.23%  ↗    0x00007f132fa04ec0: vpaddq 0x10(%rbp,%r11,8),%ymm0,%ymm1
   0.69%  │    0x00007f132fa04ec7: vmovdqu %ymm1,0x10(%rbp,%r11,8)  ;*lastore {reexecute=0 rethrow=0 return_oop=0}
-         │                                                  ; - gsmiller.PForCandidateDecoder::prefixSumOf@54 (line 17)
+         │                                                  ; - gsmiller.PForCandidateDecoderSlow::prefixSumOf@54 (line 17)
          │                                                  ; - gsmiller.PForBaselineDecoder::decodeAndPrefixSum@33 (line 39)
          │                                                  ; - gsmiller.DecodeBenchmark::pForDeltaCandidateDecoder@42 (line 29)
          │                                                  ; - gsmiller.generated.DecodeBenchmark_pForDeltaCandidateDecoder_jmhTest::pForDeltaCandidateDecoder_thrpt_jmhStub@151 (line 240)
   0.35%  │    0x00007f132fa04ece: add    $0x4,%r11d         ;*iinc {reexecute=0 rethrow=0 return_oop=0}
-         │                                                  ; - gsmiller.PForCandidateDecoder::prefixSumOf@55 (line 16)
+         │                                                  ; - gsmiller.PForCandidateDecoderSlow::prefixSumOf@55 (line 16)
          │                                                  ; - gsmiller.PForBaselineDecoder::decodeAndPrefixSum@33 (line 39)
          │                                                  ; - gsmiller.DecodeBenchmark::pForDeltaCandidateDecoder@42 (line 29)
          │                                                  ; - gsmiller.generated.DecodeBenchmark_pForDeltaCandidateDecoder_jmhTest::pForDeltaCandidateDecoder_thrpt_jmhStub@151 (line 240)
   0.08%  │    0x00007f132fa04ed2: cmp    %ecx,%r11d
          ╰    0x00007f132fa04ed5: jl     0x00007f132fa04ec0  ;*if_icmpge {reexecute=0 rethrow=0 return_oop=0}
-                                                            ; - gsmiller.PForCandidateDecoder::prefixSumOf@44 (line 16)
+                                                            ; - gsmiller.PForCandidateDecoderSlow::prefixSumOf@44 (line 16)
                                                             ; - gsmiller.PForBaselineDecoder::decodeAndPrefixSum@33 (line 39)
                                                             ; - gsmiller.DecodeBenchmark::pForDeltaCandidateDecoder@42 (line 29)
                                                             ; - gsmiller.generated.DecodeBenchmark_pForDeltaCandidateDecoder_jmhTest::pForDeltaCandidateDecoder_thrpt_jmhStub@151 (line 240)

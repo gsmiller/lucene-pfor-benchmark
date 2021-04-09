@@ -28,10 +28,10 @@ public class DecodeState {
   long[] outputLongs;
 
   //@Param({ "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12" , "13", "14", "15", "16" })
-  @Param({ "1", "2", "4", "8", "16" })
+  @Param({ "1", "2", "3", "4" })
   int bitsPerValue;
 
-  @Param({ "0", "1", "2", "3", "4", "5", "6", "7" })
+  @Param({ "0" })
   int exceptionCount;
 
   //@Param({ "0", "1", "2" })

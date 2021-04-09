@@ -1,9 +1,9 @@
 package gsmiller;
 
 /** Utility class to encode sequences of 128 small positive integers. */
-class PForCandidateDecoder extends PForBaselineDecoder {
+class PForCandidateDecoderSlow extends PForBaselineDecoder {
 
-    PForCandidateDecoder(ForUtil forUtil) {
+    PForCandidateDecoderSlow(ForUtil forUtil) {
         super(forUtil);
     }
 

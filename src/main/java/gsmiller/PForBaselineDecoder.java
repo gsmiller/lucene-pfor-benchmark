@@ -17,7 +17,7 @@ class PForBaselineDecoder {
         }
     }
 
-    private final ForUtil forUtil;
+    protected final ForUtil forUtil;
 
     PForBaselineDecoder(ForUtil forUtil) {
         assert ForUtil.BLOCK_SIZE <= 256 : "blocksize must fit in one byte. got " + ForUtil.BLOCK_SIZE;
@@ -35,7 +35,8 @@ class PForBaselineDecoder {
                     prefixSumOf(longs, base, sameVal);
                 }
             } else {
-                forUtil.decodeAndPrefixSum(bitsPerValue, in, base, longs);
+                forUtil.decodeTo32(bitsPerValue, in, longs);
+                prefixSum32(longs, base);
             }
         } else { // we have exceptions
             // pack two values per long so we can apply prefixes two-at-a-time, just like in ForUtil
@@ -57,7 +58,7 @@ class PForBaselineDecoder {
      * Fill {@code longs} with the final values for the case of all deltas being 1. Note this assumes
      * there are no exceptions to apply.
      */
-    private static void prefixSumOfOnes(long[] longs, long base) {
+    protected static void prefixSumOfOnes(long[] longs, long base) {
         System.arraycopy(IDENTITY_PLUS_ONE, 0, longs, 0, ForUtil.BLOCK_SIZE);
         // This loop gets auto-vectorized
         for (int i = 0; i < ForUtil.BLOCK_SIZE; ++i) {
@@ -79,13 +80,13 @@ class PForBaselineDecoder {
      * Fills the {@code longs} with the provided {@code val}, packed two values per long (using 32
      * bits per value).
      */
-    private static void fillSameValue32(long[] longs, long val) {
+    protected static void fillSameValue32(long[] longs, long val) {
         final long token = val << 32 | val;
         Arrays.fill(longs, 0, HALF_BLOCK_SIZE, token);
     }
 
     /** Apply the exceptions where the values are packed two-per-long in {@code longs}. */
-    private void applyExceptions32(int bitsPerValue, int numExceptions, byte[] exceptions, long[] longs) {
+    protected void applyExceptions32(int bitsPerValue, int numExceptions, byte[] exceptions, long[] longs) {
         for (int i = 0; i < numExceptions; ++i) {
             final int exceptionPos = Byte.toUnsignedInt(exceptions[i * 2]);
             final long exception = Byte.toUnsignedLong(exceptions[i * 2 + 1]);
@@ -99,7 +100,7 @@ class PForBaselineDecoder {
     }
 
     /** Apply prefix sum logic where the values are packed two-per-long in {@code longs}. */
-    private static void prefixSum32(long[] longs, long base) {
+    protected static void prefixSum32(long[] longs, long base) {
         longs[0] += base << 32;
         innerPrefixSum32(longs);
         expand32(longs);
@@ -127,7 +128,7 @@ class PForBaselineDecoder {
      * but a final prefix loop will still need to run to "correct" the values of [64..127] in the
      * low-order bits, which need the 64th value added to all of them.
      */
-    private static void innerPrefixSum32(long[] longs) {
+    protected static void innerPrefixSum32(long[] longs) {
         longs[1] += longs[0];
         longs[2] += longs[1];
         longs[3] += longs[2];

@@ -23,9 +23,16 @@ public class DecodeBenchmark {
     bh.consume(state.outputLongs);
   }
 
+  //@Benchmark
+  public void pForDeltaCandidateDecoderSlow(DecodeState state, Blackhole bh) throws  IOException {
+    PForCandidateDecoderSlow decoder = new PForCandidateDecoderSlow(new ForUtil());
+    decoder.decodeAndPrefixSum(state.bitsPerValue, state.input, state.exceptions, state.sameVal, state.base, state.outputLongs);
+    bh.consume(state.outputLongs);
+  }
+
   @Benchmark
-  public void pForDeltaCandidateDecoder(DecodeState state, Blackhole bh) throws  IOException {
-    PForCandidateDecoder decoder = new PForCandidateDecoder(new ForUtil());
+  public void pForDeltaCandidateDecoderFaster(DecodeState state, Blackhole bh) throws  IOException {
+    PForCandidateDecoderFaster decoder = new PForCandidateDecoderFaster(new ForUtil());
     decoder.decodeAndPrefixSum(state.bitsPerValue, state.input, state.exceptions, state.sameVal, state.base, state.outputLongs);
     bh.consume(state.outputLongs);
   }

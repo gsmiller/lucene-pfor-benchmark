@@ -53,6 +53,14 @@ final class ForUtil {
         }
     }
 
+    private static void expand8To16(long[] arr) {
+        for (int i = 0; i < 16; ++i) {
+            long l = arr[i];
+            arr[i] = (l >>> 16) & 0x00FF00FF00FF00FFL;
+            arr[16 + i] = l & 0x00FF00FF00FF00FFL;
+        }
+    }
+
     private static void expand8To32(long[] arr) {
         for (int i = 0; i < 16; ++i) {
             long l = arr[i];
@@ -89,104 +97,10 @@ final class ForUtil {
         }
     }
 
-    private static void collapse32(long[] arr) {
-        for (int i = 0; i < 64; ++i) {
-            arr[i] = (arr[i] << 32) | arr[64 + i];
-        }
-    }
-
-    private static void prefixSum8(long[] arr, long base) {
-        expand8To32(arr);
-        prefixSum32(arr, base);
-    }
-
-    private static void prefixSum16(long[] arr, long base) {
-        // We need to move to the next primitive size to avoid overflows
-        expand16To32(arr);
-        prefixSum32(arr, base);
-    }
-
-    private static void prefixSum32(long[] arr, long base) {
-        arr[0] += base << 32;
-        innerPrefixSum32(arr);
-        expand32(arr);
-        final long l = arr[BLOCK_SIZE / 2 - 1];
-        for (int i = BLOCK_SIZE / 2; i < BLOCK_SIZE; ++i) {
-            arr[i] += l;
-        }
-    }
-
-    // For some reason unrolling seems to help
-    private static void innerPrefixSum32(long[] arr) {
-        arr[1] += arr[0];
-        arr[2] += arr[1];
-        arr[3] += arr[2];
-        arr[4] += arr[3];
-        arr[5] += arr[4];
-        arr[6] += arr[5];
-        arr[7] += arr[6];
-        arr[8] += arr[7];
-        arr[9] += arr[8];
-        arr[10] += arr[9];
-        arr[11] += arr[10];
-        arr[12] += arr[11];
-        arr[13] += arr[12];
-        arr[14] += arr[13];
-        arr[15] += arr[14];
-        arr[16] += arr[15];
-        arr[17] += arr[16];
-        arr[18] += arr[17];
-        arr[19] += arr[18];
-        arr[20] += arr[19];
-        arr[21] += arr[20];
-        arr[22] += arr[21];
-        arr[23] += arr[22];
-        arr[24] += arr[23];
-        arr[25] += arr[24];
-        arr[26] += arr[25];
-        arr[27] += arr[26];
-        arr[28] += arr[27];
-        arr[29] += arr[28];
-        arr[30] += arr[29];
-        arr[31] += arr[30];
-        arr[32] += arr[31];
-        arr[33] += arr[32];
-        arr[34] += arr[33];
-        arr[35] += arr[34];
-        arr[36] += arr[35];
-        arr[37] += arr[36];
-        arr[38] += arr[37];
-        arr[39] += arr[38];
-        arr[40] += arr[39];
-        arr[41] += arr[40];
-        arr[42] += arr[41];
-        arr[43] += arr[42];
-        arr[44] += arr[43];
-        arr[45] += arr[44];
-        arr[46] += arr[45];
-        arr[47] += arr[46];
-        arr[48] += arr[47];
-        arr[49] += arr[48];
-        arr[50] += arr[49];
-        arr[51] += arr[50];
-        arr[52] += arr[51];
-        arr[53] += arr[52];
-        arr[54] += arr[53];
-        arr[55] += arr[54];
-        arr[56] += arr[55];
-        arr[57] += arr[56];
-        arr[58] += arr[57];
-        arr[59] += arr[58];
-        arr[60] += arr[59];
-        arr[61] += arr[60];
-        arr[62] += arr[61];
-        arr[63] += arr[62];
-    }
-
     private final long[] tmp = new long[BLOCK_SIZE / 2];
 
     /** Number of bytes required to encode 128 integers of {@code bitsPerValue} bits per value. */
-    int numBytes(int bitsPerValue) throws IOException {
+    int numBytes(int bitsPerValue) {
         return bitsPerValue << (BLOCK_SIZE_LOG2 - 3);
     }
 
@@ -501,109 +415,94 @@ final class ForUtil {
         }
     }
 
-    /** Delta-decode 128 integers into {@code longs}. */
-    void decodeAndPrefixSum(int bitsPerValue, ByteBuffer in, long base, long[] longs)
-            throws IOException {
+    void decodeTo16(int bitsPerValue, ByteBuffer in, long[] longs) throws IOException {
+        assert bitsPerValue <= 16;
         switch (bitsPerValue) {
             case 1:
                 decode1(in, tmp, longs);
-                prefixSum8(longs, base);
+                expand8To16(longs);
                 break;
             case 2:
                 decode2(in, tmp, longs);
-                prefixSum8(longs, base);
+                expand8To16(longs);
                 break;
             case 3:
                 decode3(in, tmp, longs);
-                prefixSum8(longs, base);
+                expand8To16(longs);
                 break;
             case 4:
                 decode4(in, tmp, longs);
-                prefixSum8(longs, base);
+                expand8To16(longs);
                 break;
             case 5:
                 decode5(in, tmp, longs);
-                prefixSum8(longs, base);
+                expand8To16(longs);
                 break;
             case 6:
                 decode6(in, tmp, longs);
-                prefixSum8(longs, base);
+                expand8To16(longs);
                 break;
             case 7:
                 decode7(in, tmp, longs);
-                prefixSum8(longs, base);
+                expand8To16(longs);
                 break;
             case 8:
                 decode8(in, tmp, longs);
-                prefixSum8(longs, base);
+                expand8To16(longs);
                 break;
             case 9:
                 decode9(in, tmp, longs);
-                prefixSum16(longs, base);
                 break;
             case 10:
                 decode10(in, tmp, longs);
-                prefixSum16(longs, base);
                 break;
             case 11:
                 decode11(in, tmp, longs);
-                prefixSum16(longs, base);
                 break;
             case 12:
                 decode12(in, tmp, longs);
-                prefixSum16(longs, base);
                 break;
             case 13:
                 decode13(in, tmp, longs);
-                prefixSum16(longs, base);
                 break;
             case 14:
                 decode14(in, tmp, longs);
-                prefixSum16(longs, base);
                 break;
             case 15:
                 decode15(in, tmp, longs);
-                prefixSum16(longs, base);
-                break;
-            case 16:
-                decode16(in, tmp, longs);
-                prefixSum16(longs, base);
-                break;
-            case 17:
-                decode17(in, tmp, longs);
-                prefixSum32(longs, base);
-                break;
-            case 18:
-                decode18(in, tmp, longs);
-                prefixSum32(longs, base);
-                break;
-            case 19:
-                decode19(in, tmp, longs);
-                prefixSum32(longs, base);
-                break;
-            case 20:
-                decode20(in, tmp, longs);
-                prefixSum32(longs, base);
-                break;
-            case 21:
-                decode21(in, tmp, longs);
-                prefixSum32(longs, base);
-                break;
-            case 22:
-                decode22(in, tmp, longs);
-                prefixSum32(longs, base);
-                break;
-            case 23:
-                decode23(in, tmp, longs);
-                prefixSum32(longs, base);
-                break;
-            case 24:
-                decode24(in, tmp, longs);
-                prefixSum32(longs, base);
                 break;
             default:
-                decodeSlow(bitsPerValue, in, tmp, longs);
-                prefixSum32(longs, base);
+                decode16(in, tmp, longs);
+                break;
+        }
+    }
+
+    void decodeTo8(int bitsPerValue, ByteBuffer in, long[] longs) throws IOException {
+        assert bitsPerValue <= 8;
+        switch (bitsPerValue) {
+            case 1:
+                decode1(in, tmp, longs);
+                break;
+            case 2:
+                decode2(in, tmp, longs);
+                break;
+            case 3:
+                decode3(in, tmp, longs);
+                break;
+            case 4:
+                decode4(in, tmp, longs);
+                break;
+            case 5:
+                decode5(in, tmp, longs);
+                break;
+            case 6:
+                decode6(in, tmp, longs);
+                break;
+            case 7:
+                decode7(in, tmp, longs);
+                break;
+            default:
+                decode8(in, tmp, longs);
                 break;
         }
     }
