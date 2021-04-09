@@ -1,20 +1,31 @@
 package gsmiller;
 
 /** Utility class to encode sequences of 128 small positive integers. */
-class PForCandidateDecoder extends AbstractPForDecoder {
+class PForCandidateDecoder extends PForBaselineDecoder {
 
     PForCandidateDecoder(ForUtil forUtil) {
         super(forUtil);
     }
 
     @Override
-    protected void prefixSumOf(long[] longs, long base, long val) {
-        System.arraycopy(IDENTITY_PLUS_ONE, 0, longs, 0, ForUtil.BLOCK_SIZE);
-        for (int i = 0; i < ForUtil.BLOCK_SIZE; ++i) {
-            longs[i] *= val;
+    protected void prefixSum(int bitsPerValue, int numExceptions, byte[] exceptions, long[] longs, long base) {
+        expand32(longs);
+        applyExceptions(bitsPerValue, numExceptions, exceptions, longs);
+        applyPrefixSum(longs, base);
+    }
+
+    private static void applyExceptions(int bitsPerValue, int numExceptions, byte[] exceptions, long[] longs) {
+        for (int i = 0; i < numExceptions; ++i) {
+            final int exceptionPos = Byte.toUnsignedInt(exceptions[i * 2]);
+            final long exception = Byte.toUnsignedLong(exceptions[i * 2 + 1]);
+            longs[exceptionPos] |= exception << bitsPerValue;
         }
-        for (int i = 0; i < ForUtil.BLOCK_SIZE; ++i) {
-            longs[i] += base;
+    }
+
+    private static void applyPrefixSum(long[] longs, long base) {
+        longs[0] += base;
+        for (int i = 1; i < ForUtil.BLOCK_SIZE; ++i) {
+            longs[i] += longs[i - 1];
         }
     }
 }
