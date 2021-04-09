@@ -32,7 +32,7 @@ public class DecodeState {
   int bitsPerValue;
 
   //@Param({ "0", "1", "2", "3", "4", "5", "6", "7" })
-  @Param({ "0" })
+  @Param({ "3", "7" })
   int exceptionCount;
 
   //@Param({ "0", "1", "2" })

@@ -23,7 +23,7 @@ public class DecodeBenchmark {
     bh.consume(state.outputLongs);
   }
 
-  @Benchmark
+  //@Benchmark
   public void pForDeltaCandidateDecoder(DecodeState state, Blackhole bh) throws  IOException {
     PForCandidateDecoder decoder = new PForCandidateDecoder(new ForUtil());
     decoder.decodeAndPrefixSum(state.bitsPerValue, state.input, state.exceptions, state.sameVal, state.base, state.outputLongs);
